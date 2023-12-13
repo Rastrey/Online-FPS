@@ -7,23 +7,24 @@ namespace Player
     public class PlayerMovement : NetworkBehaviour
     {
         [Header("Movement Settings")]
-        [SerializeField] private float _speed = 125;
+        [SerializeField] private float _speed = 150;
         public float SpeedBoost = 0;
-        [SerializeField] private float _maxSpeed = 1000;
-        [SerializeField] private float _jumpForce = 4;
+        [SerializeField] private float _maxSpeed = 10;
+        [SerializeField] private float _jumpForce = 3;
         [SerializeField] private float _friction = 10;
-        [SerializeField] private float _slopeLimit = 45;
+        [SerializeField] private float _slopeLimit = 50;
 
         [Header("Bunnyhop Settings")]
         [SerializeField] private float _airLimit = 1;
-        [SerializeField] private float _airAcceleration = 100;
+        [SerializeField] private float _airAcceleration = 200;
+        [SerializeField, Range(0, 1)] private float _jumpStaminaPerSecond = 0.5f;
 
         [Header("Rotation Settings")]
         [SerializeField] private float _mouseSensitivity = 2;
 
         [Header("Camera Settings")]
         [SerializeField] private float _cameraRotationSpeed = 125;
-        [SerializeField] private Vector3 _cameraPositionOffset;
+        [SerializeField] private Vector3 _cameraPositionOffset = new Vector3(0, 0.75f, 0);
 
         private bool _isFocused;
         protected Vector2 _rotation;
@@ -31,18 +32,18 @@ namespace Player
         private Transform _camera;
         private Rigidbody _rb;
 
-        protected Vector3 _inputDir;
+        protected Vector3 _moveDir;
         private int _collisionCount;
         public bool OnGround { get; protected set; }
-        protected bool _ableJump { get; private set; }
         protected Vector3 _groundNormal { get; private set; }
+        protected float _jumpStamina { get; private set; }
 
 
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
             _camera = Camera.main.transform;
-            _ableJump = true;
+            _jumpStamina = 1;
         }
 
         private void Start()
@@ -64,20 +65,11 @@ namespace Player
             }
         }
 
-        private void LateUpdate()
-        {
-            if (!isLocalPlayer) return;
-
-            if (_isFocused)
-            {
-                Rotate();
-            }
-            CameraControll();
-        }
-
         protected void FixedUpdate()
         {
-            if (_rb.velocity.magnitude < 0.1 && OnGround && _inputDir == Vector3.zero)
+            SetInputData();
+
+            if (_rb.velocity.magnitude < 0.1 && OnGround && _moveDir == Vector3.zero)
                 _rb.velocity = Vector3.zero;
 
             _rb.useGravity = !OnGround;
@@ -85,39 +77,8 @@ namespace Player
             if (_collisionCount == 0)
                 OnGround = false;
 
-            if (!isLocalPlayer) return;
-
-            _inputDir = transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
-            _inputDir.Normalize();
-
-            if (OnGround)
-            {
-                if (Input.GetKey(KeyCode.Space))
-                {
-                    if (_ableJump)
-                    {
-                        Jump();
-                    }
-                    OnGround = false;
-                    return;
-                }
-
-                Friction();
-                if (_isFocused)
-                {
-                    // делаем нормальное передвижение по наклонённым объектам
-                    _inputDir = Vector3.Cross(Vector3.Cross(_groundNormal, _inputDir), _groundNormal);
-                    GroundAccelerate();
-                }
-            }
-            else
-            {
-                if (_isFocused)
-                {
-                    AirAccelerate();
-                }
-            }
-            OnGround = false;
+            if (isLocalPlayer && _isFocused)
+                MovementController();
         }
 
         protected void OnCollisionStay(Collision other)
@@ -145,23 +106,60 @@ namespace Player
                 _collisionCount = 0;
         }
 
-        private void Rotate()
+        private void SetInputData()
         {
+            _moveDir = transform.right * InputManager.Singleton.MoveDirection.x + transform.forward * InputManager.Singleton.MoveDirection.x;
+            _moveDir = Vector3.Cross(Vector3.Cross(_groundNormal, _moveDir), _groundNormal);
+            _moveDir.Normalize();
+
             _rotation = new Vector2(_rotation.x % 360, _rotation.y % 360);
             _rotation += new Vector2(-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X")) * _mouseSensitivity * 2;
-            _rotation.x = Mathf.Clamp(_rotation.x, -90, 90);
-            transform.transform.rotation = Quaternion.Euler(0, _rotation.y, 0);
         }
 
-        private void CameraControll()
+        private void MovementController()
         {
+            RotatePlayer();
+
+            _jumpStamina += _jumpStaminaPerSecond * Time.fixedDeltaTime;
+            if (_jumpStamina > 1)
+                _jumpStamina = 1;
+
+            if (OnGround)
+            {
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    if (_jumpStamina > 0)
+                    {
+                        Jump();
+                    }
+                    OnGround = false;
+                    return;
+                }
+
+                Friction();
+                GroundAccelerate();
+            }
+            else
+            {
+                AirAccelerate();
+            }
+            OnGround = false;
+        }
+
+        private void RotatePlayer()
+        {
+            if (_isFocused)
+            {
+                _rotation.x = Mathf.Clamp(_rotation.x, -90, 90);
+                transform.transform.rotation = Quaternion.Euler(0, _rotation.y, 0);
+            }
             _camera.position = transform.position + _cameraPositionOffset;
             _camera.rotation = Quaternion.Lerp(_camera.transform.rotation, Quaternion.Euler(_rotation), _cameraRotationSpeed * Time.deltaTime);
         }
 
         protected void GroundAccelerate()
         {
-            float speedLimit = _maxSpeed + SpeedBoost - Vector3.Dot(_rb.velocity, _inputDir);
+            float speedLimit = _maxSpeed + SpeedBoost - Vector3.Dot(_rb.velocity, _moveDir);
             float velocityAdd = (_speed + SpeedBoost) * Time.fixedDeltaTime;
 
             if (speedLimit <= 0f) return;
@@ -171,7 +169,7 @@ namespace Player
                 velocityAdd = speedLimit;
             }
             SpeedBoost = 0;
-            _rb.velocity += velocityAdd * _inputDir;
+            _rb.velocity += velocityAdd * _moveDir;
         }
 
         protected void AirAccelerate()
@@ -179,7 +177,7 @@ namespace Player
             var lhs = _rb.velocity;
             lhs.y = 0f;
 
-            float speedLimit = _airLimit - Vector3.Dot(lhs, _inputDir);
+            float speedLimit = _airLimit - Vector3.Dot(lhs, _moveDir);
             float num2 = _airAcceleration * Time.fixedDeltaTime;
 
             if (speedLimit <= 0f) return;
@@ -188,7 +186,7 @@ namespace Player
             {
                 num2 = speedLimit;
             }
-            _rb.velocity += num2 * _inputDir;
+            _rb.velocity += num2 * _moveDir;
         }
 
         protected virtual void Jump()
@@ -198,9 +196,9 @@ namespace Player
                 _rb.velocity = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
             }
 
-            _rb.velocity += Vector3.up * _jumpForce;
+            _rb.velocity += Vector3.up * _jumpForce * _jumpStamina;
             OnGround = false;
-            StartCoroutine(JumpTimer());
+            _jumpStamina = 0;
         }
 
         protected void Friction()
@@ -210,13 +208,6 @@ namespace Player
                 _rb.velocity *= friction;
 //            else
 //                _rb.velocity = new Vector3(_rb.velocity.x * friction, _rb.velocity.y, _rb.velocity.z * friction);
-        }
-
-        private IEnumerator JumpTimer()
-        {
-            _ableJump = false;
-            yield return new WaitForSeconds(0.5f);
-            _ableJump = true;
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Player
 			}
 			if (_isJumpPressed)
 			{
-				if (_ableJump)
+                if (_jumpStamina > 0)
 				{
 					Jump();
 				}
@@ -72,10 +72,10 @@ namespace Player
 		[Command]
 		private void CmdSetInputDir(Vector3 inputDir)
 		{
-			_inputDir = inputDir;
-			_inputDir.Normalize();
+			_moveDir = inputDir;
+			_moveDir.Normalize();
 			if (!OnGround) return;
-			_inputDir = Vector3.Cross(Vector3.Cross(_groundNormal, _inputDir), _groundNormal);
+			_moveDir = Vector3.Cross(Vector3.Cross(_groundNormal, _moveDir), _groundNormal);
 		}
 
 		[Command]

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LegsAvatarMask
+  m_Mask: 01000000000000000000000001000000010000000000000000000000000000000000000000000000000000000000000000000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Armature
+    m_Weight: 1
+  - m_Path: Armature/Hip.L
+    m_Weight: 1
+  - m_Path: Armature/Hip.L/Knee.L
+    m_Weight: 1
+  - m_Path: Armature/Hip.L/Knee.L/Shin.L
+    m_Weight: 1
+  - m_Path: Armature/Hip.L/Knee.L/Shin.L/Shin.L_end
+    m_Weight: 1
+  - m_Path: Armature/Hip.R
+    m_Weight: 1
+  - m_Path: Armature/Hip.R/Knee.R
+    m_Weight: 1
+  - m_Path: Armature/Hip.R/Knee.R/Shin.R
+    m_Weight: 1
+  - m_Path: Armature/Hip.R/Knee.R/Shin.R/Shin.R_end
+    m_Weight: 1
+  - m_Path: Armature/Spine1
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.L
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.L/Shoulder.L
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.L/Shoulder.L/Shoulder2.L
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.L/Shoulder.L/Shoulder2.L/Forearm.L
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.L/Shoulder.L/Shoulder2.L/Forearm.L/Forearm.L.001
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.L/Shoulder.L/Shoulder2.L/Forearm.L/Forearm.L.001/Forearm.L.001_end
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.R
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.R/Shoulder.R
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.R/Shoulder.R/Shoulder2.R
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.R/Shoulder.R/Shoulder2.R/Forearm.R
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.R/Shoulder.R/Shoulder2.R/Forearm.R/Forearm.R.001
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/ShoulderGirdle.R/Shoulder.R/Shoulder2.R/Forearm.R/Forearm.R.001/Forearm.R.001_end
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/Spine6
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/Spine6/Neck
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/Spine6/Neck/Head
+    m_Weight: 0
+  - m_Path: Armature/Spine1/Spine2/Spine3/Spine4/Spine5/Spine6/Neck/Head/Head_end
+    m_Weight: 0
+  - m_Path: Unturned Man
+    m_Weight: 0
